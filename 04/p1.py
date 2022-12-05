@@ -13,7 +13,7 @@ def contains(a,b):
     return a.low <= b.low and a.hi >= b.hi 
 
 def parse_line(ln):
-    # takes as input "2-3,4-5" and returns ((2,3),(4,5))
+    # takes as input "2-3,4-5" and returns (A(2,3),A(4,5))
     ln = ln.strip()
     xy = ln.split(',')
     x = xy[0].split('-')
