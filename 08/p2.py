@@ -2,6 +2,7 @@ from dataclasses import dataclass
 import re
 import numpy as np
 
+directions = ['up', 'down', 'left', 'right']
 class Forest:
 
     def __init__(self):
@@ -20,6 +21,47 @@ class Forest:
     def is_on_edge(self, x, y):
         return x == 0 or y == 0 or x == self.col_len-1 or y == self.row_len-1
         
+
+    def get_viewing_distance(self, x, y, direction):
+        h = self.row_len
+        w = self.col_len
+        height_of_pt = self.get_height(x,y)
+        viewing_distance = 1
+
+        if direction == 'up':
+            if y == 0:
+                return 0
+            for i in range(y-1,0,-1):
+                if height_of_pt <= self.get_height(x,i):
+                    break
+                else:
+                    viewing_distance += 1
+        elif direction == 'down':
+            if y == h-1:
+                return 0
+            for i in range(y+1, h-1):
+                if height_of_pt <= self.get_height(x,i):
+                    break
+                else:
+                    viewing_distance += 1
+        elif direction == 'left':
+            if x == 0:
+                return 0
+            for i in range(x-1,0,-1):
+                if height_of_pt <= self.get_height(i,y):
+                    break
+                else:
+                    viewing_distance += 1
+        elif direction == 'right':
+            if x == w-1:
+                return 0
+            for i in range(x+1,w-1):
+                if height_of_pt <= self.get_height(i,y):
+                    break
+                else:
+                    viewing_distance += 1
+        return viewing_distance
+
     def is_visible_from_outside(self, x, y):
         h = self.row_len
         w = self.col_len
@@ -82,6 +124,14 @@ class Forest:
                     count += 1
         return count
 
+    def find_best_scenic_score(self):
+        scores = []
+        for i in range(self.row_len):
+            for j in range(self.col_len):
+                sd = [self.get_viewing_distance(i, j, d) for d in directions]
+                score = np.prod(sd)
+                scores.append(score)
+        return max(scores)
     def __str__(self):
         return "trees:\n" + str(self.trees) + "\nvisible\n" + str(self.visible)
 
@@ -100,9 +150,12 @@ def solve(filename):
         forest = read_puzzle_input(file)
         forest.calc()
         print(forest)
-        print("count visible: " + str(forest.count_visible()))
+
+
+
+        print('max:')
+        print(forest.find_best_scenic_score())
 
 if __name__ == '__main__':
 
-    filename = "08/p1_input.txt"
-    solve(filename)
+    solve("08/p1_input.txt")
