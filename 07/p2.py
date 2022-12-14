@@ -1,21 +1,10 @@
 from dataclasses import dataclass
 import re
 
-
 HOME='home'
 UP='up'
 DOWN='down'
 LIST='list'
-
-
-class FileSystem:
-
-    def __init__(self):
-        self.messages = list()
-
-
-    def x(self, msg):
-        pass
 
 class CmdTrace:
     def __init__(self, cmd, arg=None):
@@ -50,6 +39,8 @@ class Node:
                 return c
         return self
     def calc_dir_sizes(self):
+        if not self.is_dir:
+            raise Exception("not a directory!")
         sum_sizes = 0
         for c in self.children:
             if c.is_dir:
@@ -115,23 +106,18 @@ def derive_file_system_from_cmds(cmds):
     root = Node()
     curr_dir = None
     for cmd in cmds:
-        match cmd.command:
-            case 'home':
-                curr_dir = root
-
-            case 'up':
-                curr_dir = curr_dir.go_up()
-
-            case 'down':
-                curr_dir = curr_dir.go_down(cmd.argument)
-
-            case 'list':
-                dir_list = cmd.output
-                for d in dir_list:
-                    child = Node(d.name, d.is_dir, d.size, curr_dir)
-                    curr_dir.children.append(child)
+        if cmd.command == HOME:
+            curr_dir = root
+        elif cmd.command == UP:
+            curr_dir = curr_dir.go_up()
+        elif cmd.command == DOWN:
+            curr_dir = curr_dir.go_down(cmd.argument)
+        elif cmd.command == LIST:
+            dir_list = cmd.output
+            for d in dir_list:
+                child = Node(d.name, d.is_dir, d.size, curr_dir)
+                curr_dir.children.append(child)
     return root
-
 
 def read_puzzle_input(inp):
     return parse_commands(inp)
@@ -150,11 +136,10 @@ def solve(filename):
         need_to_free = NEED_THIS_MUCH_SPACE - disk_free
         print("need to free up: " + str(need_to_free))
         dirs = file_sys.find_dirs()
-        big_dirs = [d.size for d in dirs if d.size > need_to_free]
-        sorted_dirs = sorted(big_dirs)
-        
-        print(sorted_dirs)
-        print("delete this: " + str(sorted_dirs[0]))
+        # filter for only dirs that are larger than what we need
+        # and then sort it so we can find the smallest
+        possible_dirs = sorted([d.size for d in dirs if d.size > need_to_free])
+        print("delete this: " + str(possible_dirs[0]))
 
 if __name__ == '__main__':
 

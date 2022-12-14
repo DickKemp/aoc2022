@@ -115,23 +115,18 @@ def derive_file_system_from_cmds(cmds):
     root = Node()
     curr_dir = None
     for cmd in cmds:
-        match cmd.command:
-            case 'home':
-                curr_dir = root
-
-            case 'up':
-                curr_dir = curr_dir.go_up()
-
-            case 'down':
-                curr_dir = curr_dir.go_down(cmd.argument)
-
-            case 'list':
-                dir_list = cmd.output
-                for d in dir_list:
-                    child = Node(d.name, d.is_dir, d.size, curr_dir)
-                    curr_dir.children.append(child)
+        if cmd.command == HOME:
+            curr_dir = root
+        elif cmd.command == UP:
+            curr_dir = curr_dir.go_up()
+        elif cmd.command == DOWN:
+            curr_dir = curr_dir.go_down(cmd.argument)
+        elif cmd.command == LIST:
+            dir_list = cmd.output
+            for d in dir_list:
+                child = Node(d.name, d.is_dir, d.size, curr_dir)
+                curr_dir.children.append(child)
     return root
-
 
 def read_puzzle_input(inp):
     return parse_commands(inp)
