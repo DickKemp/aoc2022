@@ -8,6 +8,7 @@ import pprint as pp
 import numpy as np
 import copy
 import functools
+
 class CircularList:
     def __init__(self, initial):
         self.items = initial
@@ -33,7 +34,7 @@ class CircularList:
 
 class Item:
     def __init__(self, elem, indx):
-        self.elem = elem
+        self.elem = elem * 811589153
         self.indx = indx
 
     def __str__(self):
@@ -52,17 +53,13 @@ def solve(filename):
         items = read_puzzle_input(file)
 
     cl = CircularList(items)
-    print(f"initial cl: {cl}")
-    print(f"len(cl): {len(cl.items)}\n\n")
-    initial_list = cl.items.copy()
     
-    for ith in range(0, len(cl.items)):
-    # for elem in initial_list:
-        indx = cl.find_position_of_ith_item(ith)
-        num_to_move = cl.get_elem_at_position(indx)
-        cl.move_elem(indx, num_to_move)
+    for nth in range(0,10):
+        for ith in range(0, len(cl.items)):
+            indx = cl.find_position_of_ith_item(ith)
+            num_to_move = cl.get_elem_at_position(indx)
+            cl.move_elem(indx, num_to_move)
 
-    # print(f"end: {cl}")
     zero = cl.find_position_of_elem(0)
     one_t = zero + 1000
     two_t = zero + 2000
@@ -70,13 +67,8 @@ def solve(filename):
     e1 = cl.get_elem_at_position(one_t)
     e2 = cl.get_elem_at_position(two_t)
     e3 = cl.get_elem_at_position(three_t)
-    # print(f"c1: {cl}")
-    print(f"e1: {e1}, e2: {e2}, e3: {e3}, sum: {e1+e2+e3}")
 
-    # e_0 = cl.get_elem_at_position(zero)
-    # e_1 = cl.get_elem_at_position(zero + 1)
-    # e_2 = cl.get_elem_at_position(zero + 2)
-    # print(f"1: {e_0}, 2: {e_1}, 3: {e_2}")
+    print(f"e1: {e1}, e2: {e2}, e3: {e3}, sum: {e1+e2+e3}")
 
 if __name__ == '__main__':
 
